@@ -1,0 +1,7 @@
+.editorconfig
+
+*.out
+
+*.test
+
+*.exe
