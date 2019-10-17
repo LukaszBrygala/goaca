@@ -1,11 +1,10 @@
 package main
 
 import (
-	"academy/patterns"
-	"fmt"
+	"academy/server"
 )
 
 func main() {
-	p, _ := patterns.Compile("abc*")
-	fmt.Println(p.Match("abc"))
+	s := server.New()
+	s.Run(8080)
 }

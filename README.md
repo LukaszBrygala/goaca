@@ -69,7 +69,7 @@
 * type switches `switch v := v.(type)`
 * `error` is an interface with single method: `Error() string`
 
-## 2019-10-09 `testing` package
+# 2019-10-10 `testing` package
 
 * implementing simple tests for div
 * runnig tests on package: verbose flag, selecting tests to run
@@ -79,6 +79,20 @@
 * implementing simple benchmarks
 * getting cpu profile out of benchmark
 * assertions library
+* workshop
+
+# 2019-10-17 REST server
+
+* basic http ListenAndServe + simple handler
+* Handler interface + HandleFunc type
+* server struct to keep dependencies, router as field
+* separate routes function for keeping routes
+* handler as server method returning http.HandlerFunc: prepare response to write in closure
+* middleware as function taking handler and returning handler (or HandlerFunc)
+* testing with http.NewRequest and httptest.NewRecorder
+* introduce gorilla mux
+* use gorilla mux Methods to match particular http verbs
+* use gorila PathPrefix(...).Subrouter
 * workshop
 
 ## Useful URLs
