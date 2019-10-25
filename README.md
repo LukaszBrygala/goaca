@@ -95,6 +95,16 @@
 * use gorila PathPrefix(...).Subrouter
 * workshop
 
+# 2019-10-24 Using Postgres
+
+* database/sql/driver
+* https://github.com/golang/go/wiki/SQLDrivers 
+* importing github.com/lib/pq with blank
+* opening db with registered name and created connection string: host=%s port=%d user=%s password=%s dbname=%s sslmode=disable
+* Ping to check connection
+* QueryRow + Scan + ErrNoRows
+* workshop
+
 ## Useful URLs
 
 * https://tour.golang.org

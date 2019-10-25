@@ -5,15 +5,22 @@ import (
 	"fmt"
 	"net/http"
 
+	"academy/gateways"
+
 	"github.com/gorilla/mux"
 )
 
-type Server struct {
-	router *mux.Router
+type GatawaysRepository interface {
+	Find(gatewayID, brokerType string) (gateways.Gateway, error)
 }
 
-func New() Server {
-	return Server{mux.NewRouter()}
+type Server struct {
+	gateways GatawaysRepository
+	router   *mux.Router
+}
+
+func New(gateways GatawaysRepository) Server {
+	return Server{gateways, mux.NewRouter()}
 }
 
 func (s Server) setJSONContentType(next http.Handler) http.Handler {
@@ -36,10 +43,28 @@ func (s Server) info() http.HandlerFunc {
 	}
 }
 
-func (s Server) deviceFeature() http.HandlerFunc {
+func (s Server) getGateway() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		featureName := mux.Vars(r)["featureName"]
-		w.Write([]byte(fmt.Sprintf("received request for feature %v", featureName)))
+		gatewayID := mux.Vars(r)["gatewayID"]
+		brokerType := r.FormValue("brokerType")
+
+		gateway, err := s.gateways.Find(gatewayID, brokerType)
+		if err == gateways.ErrNotFound {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		json, err := json.Marshal(gateway)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		w.Write(json)
 	}
 }
 
@@ -49,7 +74,7 @@ func (s Server) routes() {
 	s.router.HandleFunc("/v1", s.info()).Methods("GET")
 
 	gateways := s.router.PathPrefix("/v1/gateways/{gatewayID}").Subrouter()
-	gateways.HandleFunc("/devices/{deviceID}/features/{featureName}", s.deviceFeature()).Methods("GET")
+	gateways.HandleFunc("", s.getGateway()).Methods("GET")
 }
 
 func (s Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
